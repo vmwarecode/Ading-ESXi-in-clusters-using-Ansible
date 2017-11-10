@@ -1,0 +1,27 @@
+# The data 
+
+ESXis:
+  - { name: 'myESXi1', user: 'root', pass: 'password', datacenter: 'Datacenter1', cluster: 'Cluster1',  dnsdomain: 'mycompany.com', present: 'present'}
+  - { name: 'myESXi2', user: 'root', pass: 'password', datacenter: 'Datacenter1', cluster: 'Cluster1',  dnsdomain: 'mycompany.com', present: 'present'}
+  - { name: 'myESXi3', user: 'root', pass: 'password', datacenter: 'Datacenter2', cluster: 'Cluster2',  dnsdomain: 'mycompany.com', present: 'present'}
+  - { name: 'myESXi4', user: 'root', pass: 'password', datacenter: 'Datacenter2', cluster: 'Cluster2',  dnsdomain: 'mycompany.com', present: 'present'}
+
+
+
+# The ansible code to add ESXi in clusters. The ESXi should not be in the vcenter inventory yet.
+
+
+    - name: Add hosts to clusters
+      vmware_host:
+        hostname: "{{ vcenter_name }}"
+        username: "{{ vcenter_user }}"
+        password: "{{ vcenter_pass }}"
+        datacenter_name: "{{item.datacenter}}"
+        cluster_name: "{{item.cluster}}"
+        esxi_hostname: "{{item.name}}.{{item.dnsdomain}}"
+        esxi_username: "{{item.user}}"
+        esxi_password: "{{item.pass}}"
+        state: "{{item.present}}"
+        validate_certs: "{{ vcenter_validate_certs }}"
+      with_items: "{{ ESXis }}"
+      delegate_to: localhost
